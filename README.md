@@ -20,9 +20,8 @@ This is a Python script that uses Flask, LINE Messaging API, and OpenAI API to c
 2. Create a LINE Messaging API channel. You can follow the instructions provided [here](https://developers.line.biz/en/docs/messaging-api/getting-started/).
 3. Obtain the Channel Access Token and Channel Secret from the LINE Developers console and set them as environment variables.
 4. Obtain the OpenAI API key from the OpenAI website and set it as an environment variable.
-5. Set your environment variables.
-6. Run the `main.py` with `flask run`.
-7. Set your server URL to the webhook URL for your LINE Messaging API channel on LINE Developers console.
+5. Run the `main.py` with `flask run`.
+6. Set your server URL to the webhook URL for your LINE Messaging API channel on LINE Developers console.
 
 ## How it Works
 
