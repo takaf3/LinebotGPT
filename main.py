@@ -72,11 +72,10 @@ def query_openai_dalle(user_message):
     response = openai_client.images.generate(
         model="dall-e-3",
         prompt=user_message,
-        size="512x512",
+        size="1024x1024",
         quality="standard",
         n=1,
     )
-
     return response.data[0].url
 
 @app.route("/", methods=['POST'])
@@ -100,14 +99,16 @@ def handle_text_message(event):
     global assist_message
     global image_data
 
+    isDalle = classify_user_input(user_message)
+
     if image_data is not None:
         reply = query_openai_vision(user_message, image_data)
         image_data = None  # Clear the image data after using it
     else:
-        if classify_user_input(user_message) == "NO":
+        if isDalle == "NO":
             print(str(datetime.datetime.now()) + " DALLE?: " + "NO")
             reply = query_openai_chat(assist_message, user_message)
-        elif classify_user_input(user_message) == "YES":
+        elif isDalle == "YES":
             print(str(datetime.datetime.now()) + " DALLE?: " + "YES")
             reply = query_openai_dalle(user_message)
         else:
