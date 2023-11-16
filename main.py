@@ -26,6 +26,17 @@ def reply_to_line(line_event, reply_message):
         TextSendMessage(text=reply_message),
     )
 
+def classify_user_input(user_message):
+    print(str(datetime.datetime.now()) + " INFO: Sending message to OpenAI Text...")
+    response = openai_client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful analyst who can analyze the user input and tell wether if the user wants an image or not as a reply from chatbot. Reply YES or NO based on the analysis. Do not reply anything else."},
+            {"role": "user", "content": "This is the user input: " + user_message},
+        ]
+    )
+    return response.choices[0].message.content    
+
 def query_openai_chat(assist_message, user_message):
     print(str(datetime.datetime.now()) + " INFO: Sending message to OpenAI Text...")
     response = openai_client.chat.completions.create(
@@ -81,7 +92,12 @@ def handle_text_message(event):
         reply = query_openai_vision(user_message, image_data)
         image_data = None  # Clear the image data after using it
     else:
-        reply = query_openai_chat(assist_message, user_message)
+        if classify_user_input(user_message) == "NO":
+            print(str(datetime.datetime.now()) + " DALLEE?: " + "NO")
+            reply = query_openai_chat(assist_message, user_message)
+        else:
+            print(str(datetime.datetime.now()) + " DALLEE?: " + "YES")
+            reply = query_openai_chat(assist_message, user_message)
 
     assist_message = reply
 
