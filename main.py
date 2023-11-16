@@ -39,7 +39,7 @@ def classify_user_input(user_message):
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a helpful analyst who are specialized in telling if the user wants an image generated or not given the user input. Please reply "YES" or "NO" and nothing else. You should not reply "YES" unless you are absolutely confident. For example, only a word input should not mean the user wanting an image to be generated."},
-            {"role": "user", "content":　user_message},
+            {"role": "user", "content": user_message},
         ]
     )
     return response.choices[0].message.content    
