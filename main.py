@@ -27,7 +27,7 @@ def reply_to_line(line_event, reply_message):
     )
 
 def classify_user_input(user_message):
-    print(str(datetime.datetime.now()) + " INFO: Sending message to OpenAI Text...")
+    print(str(datetime.datetime.now()) + " INFO: Classifing user input with gpt3.5-turbo...")
     response = openai_client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
