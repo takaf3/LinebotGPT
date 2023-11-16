@@ -93,11 +93,14 @@ def handle_text_message(event):
         image_data = None  # Clear the image data after using it
     else:
         if classify_user_input(user_message) == "NO":
-            print(str(datetime.datetime.now()) + " DALLEE?: " + "NO")
+            print(str(datetime.datetime.now()) + " DALLE?: " + "NO")
+            reply = query_openai_chat(assist_message, user_message)
+        elif classify_user_input(user_message) == "YES":
+            print(str(datetime.datetime.now()) + " DALLE?: " + "YES")
             reply = query_openai_chat(assist_message, user_message)
         else:
-            print(str(datetime.datetime.now()) + " DALLEE?: " + "YES")
-            reply = query_openai_chat(assist_message, user_message)
+            print(str(datetime.datetime.now()) + " DALLE?: " + "EROOR")
+            reply = "ん、ごめんもう一回言って！"
 
     assist_message = reply
 
