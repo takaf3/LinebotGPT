@@ -26,6 +26,24 @@ def reply_to_line(line_event, reply_message):
         TextSendMessage(text=reply_message),
     )
 
+def reply_with_image_to_line(line_event, image_url):
+    print(str(datetime.datetime.now()) + " INFO: Sending image reply to LINE")
+    line_bot_api.reply_message(
+        line_event.reply_token,
+        ImageSendMessage(original_content_url=image_url, preview_image_url=image_url),
+    )
+
+def classify_user_input(user_message):
+    print(str(datetime.datetime.now()) + " INFO: Classifing user input with gpt3.5-turbo...")
+    response = openai_client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful analyst who are specialized in telling if the user wants an image generated or not given the user input. Please reply 'YES' or 'NO' and nothing else. You should not reply 'YES' unless you are absolutely confident. For example, only a word input should not mean the user wanting an image to be generated."},
+            {"role": "user", "content": user_message},
+        ]
+    )
+    return response.choices[0].message.content    
+
 def query_openai_chat(assist_message, user_message):
     print(str(datetime.datetime.now()) + " INFO: Sending message to OpenAI Text...")
     response = openai_client.chat.completions.create(
@@ -56,6 +74,17 @@ def query_openai_vision(message, encoded_image):
     )
     return response.choices[0].message.content
 
+def query_openai_dalle(user_message):
+    print(str(datetime.datetime.now()) + " INFO: Sending request to OpenAI DALLE...")
+    response = openai_client.images.generate(
+        model="dall-e-3",
+        prompt=user_message,
+        size="1024x1024",
+        quality="standard",
+        n=1,
+    )
+    return response
+
 @app.route("/", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
@@ -77,15 +106,31 @@ def handle_text_message(event):
     global assist_message
     global image_data
 
+    isDalle = classify_user_input(user_message)
+
     if image_data is not None:
         reply = query_openai_vision(user_message, image_data)
         image_data = None  # Clear the image data after using it
     else:
-        reply = query_openai_chat(assist_message, user_message)
+        if isDalle == "NO":
+            print(str(datetime.datetime.now()) + " DALLE?: " + "NO")
+            reply = query_openai_chat(assist_message, user_message)
+        elif isDalle == "YES":
+            print(str(datetime.datetime.now()) + " DALLE?: " + "YES")
+            result = query_openai_dalle(user_message)
+            image = result.data[0].url
+            reply = result.data[0].revised_prompt
+        else:
+            print(str(datetime.datetime.now()) + " DALLE?: " + "EROOR")
+            isDalle = "NO"
+            reply = "ん、ごめんもう一回言って！"
 
     assist_message = reply
 
-    reply_to_line(event, reply)
+    if isDalle == "NO":
+        reply_to_line(event, reply)
+    else:
+        reply_with_image_to_line(event, image)
 
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker_message(event):
