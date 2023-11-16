@@ -75,7 +75,7 @@ def query_openai_vision(message, encoded_image):
     return response.choices[0].message.content
 
 def query_openai_dalle(user_message):
-    print(str(datetime.datetime.now()) + " INFO: Sending message to OpenAI DALLE...")
+    print(str(datetime.datetime.now()) + " INFO: Sending request to OpenAI DALLE...")
     response = openai_client.images.generate(
         model="dall-e-3",
         prompt=user_message,
