@@ -38,8 +38,8 @@ def classify_user_input(user_message):
     response = openai_client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful analyst who can analyze the user input and tell wether if the user wants an image or not as a reply from chatbot. Reply YES or NO based on the analysis. Do not reply anything else."},
-            {"role": "user", "content": "This is the user input: " + user_message},
+            {"role": "system", "content": "You are a helpful analyst who are specialized in telling if the user wants an image generated or not given the user input. Please reply "YES" or "NO" and nothing else. You should not reply "YES" unless you are absolutely confident. For example, only a word input should not mean the user wanting an image to be generated."},
+            {"role": "user", "content":　user_message},
         ]
     )
     return response.choices[0].message.content    
@@ -83,7 +83,7 @@ def query_openai_dalle(user_message):
         quality="standard",
         n=1,
     )
-    return response.data[0].url
+    return response
 
 @app.route("/", methods=['POST'])
 def callback():
@@ -117,7 +117,9 @@ def handle_text_message(event):
             reply = query_openai_chat(assist_message, user_message)
         elif isDalle == "YES":
             print(str(datetime.datetime.now()) + " DALLE?: " + "YES")
-            reply = query_openai_dalle(user_message)
+            result = query_openai_dalle(user_message)
+            image = response.data[0].url
+            reply = response.data[0].revised_prompt
         else:
             print(str(datetime.datetime.now()) + " DALLE?: " + "EROOR")
             isDalle = "NO"
@@ -128,7 +130,7 @@ def handle_text_message(event):
     if isDalle == "NO":
         reply_to_line(event, reply)
     else:
-        reply_with_image_to_line(event, reply)
+        reply_with_image_to_line(event, image)
 
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker_message(event):
