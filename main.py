@@ -67,6 +67,18 @@ def query_openai_vision(message, encoded_image):
     )
     return response.choices[0].message.content
 
+def query_openai_dalle(user_message):
+    print(str(datetime.datetime.now()) + " INFO: Sending message to OpenAI DALLE...")
+    response = openai_client.images.generate(
+        model="dall-e-3",
+        prompt=user_message,
+        size="512x512",
+        quality="standard",
+        n=1,
+    )
+
+    return response.data[0].url
+
 @app.route("/", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
@@ -97,7 +109,7 @@ def handle_text_message(event):
             reply = query_openai_chat(assist_message, user_message)
         elif classify_user_input(user_message) == "YES":
             print(str(datetime.datetime.now()) + " DALLE?: " + "YES")
-            reply = query_openai_chat(assist_message, user_message)
+            reply = query_openai_dalle(user_message)
         else:
             print(str(datetime.datetime.now()) + " DALLE?: " + "EROOR")
             reply = "ん、ごめんもう一回言って！"
