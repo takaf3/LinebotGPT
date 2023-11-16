@@ -118,8 +118,8 @@ def handle_text_message(event):
         elif isDalle == "YES":
             print(str(datetime.datetime.now()) + " DALLE?: " + "YES")
             result = query_openai_dalle(user_message)
-            image = response.data[0].url
-            reply = response.data[0].revised_prompt
+            image = result.data[0].url
+            reply = result.data[0].revised_prompt
         else:
             print(str(datetime.datetime.now()) + " DALLE?: " + "EROOR")
             isDalle = "NO"
