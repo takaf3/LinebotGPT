@@ -34,14 +34,16 @@ def reply_with_image_to_line(line_event, image_url):
     )
 
 def classify_user_input(user_message):
-    print(str(datetime.datetime.now()) + " INFO: Classifing user input with gpt3.5-turbo...")
+    print(str(datetime.datetime.now()) + " INFO: Classifing user input with gpt-4")
     response = openai_client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-1106-preview",
         messages=[
             {"role": "system", "content": "You are a helpful analyst who are specialized in telling if the user wants an image generated or not given the user input. Please reply 'YES' or 'NO' and nothing else. You should not reply 'YES' unless you are absolutely confident. For example, only a word input should not mean the user wanting an image to be generated."},
             {"role": "user", "content": user_message},
         ]
     )
+    print(str(datetime.datetime.now()) + " INFO: Got response from gpt-4")
+
     return response.choices[0].message.content    
 
 def query_openai_chat(assist_message, user_message):
@@ -54,6 +56,8 @@ def query_openai_chat(assist_message, user_message):
             {"role": "user", "content": user_message},
         ]
     )
+    print(str(datetime.datetime.now()) + " INFO: Got response from OpenAI Text")
+
     return response.choices[0].message.content
 
 def query_openai_vision(message, encoded_image):
@@ -72,6 +76,8 @@ def query_openai_vision(message, encoded_image):
         ],
         max_tokens=300,
     )
+    print(str(datetime.datetime.now()) + " INFO: Got response from OpenAI Vision")
+
     return response.choices[0].message.content
 
 def query_openai_dalle(user_message):
@@ -83,6 +89,8 @@ def query_openai_dalle(user_message):
         quality="standard",
         n=1,
     )
+    print(str(datetime.datetime.now()) + " INFO: Got response from OpenAI DALLE")
+
     return response
 
 @app.route("/", methods=['POST'])
