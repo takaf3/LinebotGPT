@@ -12,9 +12,13 @@ from openai import OpenAI
 
 app = Flask(__name__)
 
-line_bot_api = LineBotApi(os.environ["LINE_CH_ACCESS_TOKEN"])
-handler = WebhookHandler(os.environ["LINE_CH_SECRET"])
-openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+if "LINE_CH_ACCESS_TOKEN" in os.environ and "LINE_CH_SECRET" in os.environ and "OPENAI_API_KEY" in os.environ:
+    line_bot_api = LineBotApi(os.environ["LINE_CH_ACCESS_TOKEN"])
+    handler = WebhookHandler(os.environ["LINE_CH_SECRET"])
+    openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+else:
+    print("Required environment variables not set. Exiting...")
+    exit(1)
 
 assist_message = ""
 image_data = None
