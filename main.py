@@ -117,6 +117,7 @@ def handle_text_message(event):
     isDalle = classify_user_input(user_message)
 
     if image_data is not None:
+        print(str(datetime.datetime.now()) + " DALLE?: " + "NON DALLE REQUEST")
         reply = query_openai_vision(user_message, image_data)
         image_data = None  # Clear the image data after using it
     else:
